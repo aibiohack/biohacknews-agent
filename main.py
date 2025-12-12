@@ -1,13 +1,12 @@
 import os
 import telebot
-from duckduckgo_search import DDGS
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
 # --- НАСТРОЙКИ ---
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-
+GEMINI_API_KEY = os.environ.get('OPENAI_API_KEY')
 # Проверка наличия ключей
 if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, OPENAI_API_KEY]):
     print("Ошибка: Один из токенов (Telegram или OpenAI) не найден в Secrets.")
@@ -15,7 +14,7 @@ if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, OPENAI_API_KEY]):
 
 # Инициализация
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
-client = OpenAI(api_key=OPENAI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def get_raw_news():
     """Ищет 'сырые' новости в DuckDuckGo."""
@@ -29,12 +28,12 @@ def get_raw_news():
         print(f"Ошибка поиска: {e}")
     return results
 
-def analyze_with_gpt(news_items):
-    """Просит GPT выбрать топ-3 и написать саммари."""
+analyze_with_gemini(news_items):
+    """Просит Gemini выбрать топ-3 и написать саммари."""
     if not news_items:
         return None
 
-    print("🧠 ИИ анализирует статьи...")
+    print("🧠 ИИ анализирует статьи с помощью Gemini...")
 
     # Подготовка данных для ИИ
     data_text = ""
@@ -54,19 +53,18 @@ def analyze_with_gpt(news_items):
         "(Повтори для 3 новостей)"
     )
 
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini", # Быстрая и дешевая модель, идеально для этой задачи
-            messages=[
-                {"role": "system", "content": "Ты полезный ассистент-исследователь."},
-                {"role": "user", "content": prompt}
-            ]
+  try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash', # Быстрая и мощная модель
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction="Ты полезный ассистент-исследователь.",
+            ),
         )
-        return response.choices[0].message.content
+        return response.text
     except Exception as e:
-        print(f"Ошибка OpenAI: {e}")
+        print(f"Ошибка Gemini: {e}")
         return None
-
 def send_telegram(text):
     if not text:
         print("Нет текста для отправки.")
@@ -82,7 +80,7 @@ def send_telegram(text):
 if __name__ == "__main__":
     news = get_raw_news()
     if news:
-        summary = analyze_with_gpt(news)
+        summary = analyze_with_gemini(news)
         send_telegram(summary)
     else:
         print("Новости не найдены.")
