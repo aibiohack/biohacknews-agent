@@ -1,5 +1,6 @@
 import os
 import telebot
+from duckduckgo_search import DDGS
 from google import genai
 from google.genai import types
 
