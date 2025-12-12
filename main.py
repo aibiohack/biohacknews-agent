@@ -53,7 +53,7 @@ def analyze_with_gemini(news_items):
         "(Повтори для 3 новостей)"
     )
 
-  try:
+try:
         response = client.models.generate_content(
             model='gemini-2.5-flash', # Быстрая и мощная модель
             contents=prompt,
