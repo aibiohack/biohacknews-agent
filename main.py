@@ -8,8 +8,8 @@ TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 GEMINI_API_KEY = os.environ.get('OPENAI_API_KEY')
 # Проверка наличия ключей
-if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, OPENAI_API_KEY]):
-    print("Ошибка: Один из токенов (Telegram или OpenAI) не найден в Secrets.")
+if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, GEMINI_API_KEY]):
+    print("Ошибка: Один из токенов (Telegram или Gemini) не найден в Secrets.")
     exit(1)
 
 # Инициализация
