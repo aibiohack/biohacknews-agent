@@ -28,7 +28,7 @@ def get_raw_news():
         print(f"Ошибка поиска: {e}")
     return results
 
-analyze_with_gemini(news_items):
+def analyze_with_gemini(news_items):
     """Просит Gemini выбрать топ-3 и написать саммари."""
     if not news_items:
         return None
